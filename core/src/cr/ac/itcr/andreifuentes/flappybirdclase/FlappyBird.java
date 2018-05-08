@@ -5,13 +5,25 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.Random;
 
@@ -19,11 +31,20 @@ public class FlappyBird extends ApplicationAdapter {
 	SpriteBatch batch;
 	ShapeRenderer shapeRenderer;
 
+
+    private Stage stage; //** stage holds the Button **//
+    private TextureAtlas buttonsAtlas; //** image of buttons **//
+    private Skin buttonSkin; //** images are used as skins of the button **//
+    private TextButton button; //** the button - the only actor in program **//
+
+
 	Texture background;
 	Texture topTube;
 	Texture bottomTube;
 	Texture[] birds;
 	Texture gameOver;
+	Texture easyButton;
+
 	int birdState;
 	float gap;
 	float birdY;
@@ -45,6 +66,7 @@ public class FlappyBird extends ApplicationAdapter {
     Sound salta;
     Music bosque;
 
+
 	Circle birdCircle;
 	Rectangle[] topPipes;
 	Rectangle[] bottomPipes;
@@ -61,6 +83,7 @@ public class FlappyBird extends ApplicationAdapter {
 		topTube = new Texture("toptube.png");
 		bottomTube = new Texture("bottomtube.png");
 		gameOver = new Texture("gameOverOriginal.png");
+		easyButton = new Texture("green.png");
 
 		birdCircle = new Circle();
 		topPipes = new Rectangle[numberOfPipes];
@@ -84,14 +107,13 @@ public class FlappyBird extends ApplicationAdapter {
 		font.setColor(Color.WHITE);
 		font.getData().setScale(10);
 
-		bosque = Gdx.audio.newMusic(Gdx.files.internal("forest.mp3"));
-		bosque.play();
 
+		bosque = Gdx.audio.newMusic(Gdx.files.internal("forest.mp3"));
 		startGame();
 	}
 
 	public void startGame(){
-
+		bosque.play();
 		birdY = Gdx.graphics.getHeight()/2 - birds[birdState].getHeight()/2;
 		for (int i = 0; i<numberOfPipes; i++){
 			pipeYOffset[i] = (random.nextFloat()*(maxLine-minLine)+minLine);
@@ -101,15 +123,19 @@ public class FlappyBird extends ApplicationAdapter {
 			topPipes[i] = new Rectangle();
 			bottomPipes[i] = new Rectangle();
 		}
-
 	}
 
 	@Override
 	public void render () {
+
 		batch.begin();
 		batch.draw(background, 0,0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		// no iniciado
 		if (game_state == 0){
+			//stage.act(Gdx.graphics.getDeltaTime()); //Perform ui logic
+			//stage.draw(); //Dibuja el boton
+			//batch.draw(easyButton, Gdx.graphics.getWidth()/2 - gameOver.getWidth()/2, Gdx.graphics.getHeight()/2 - gameOver.getHeight()/2);
+
 			if (Gdx.input.justTouched()){
 				game_state = 1;
 			}
@@ -206,6 +232,7 @@ public class FlappyBird extends ApplicationAdapter {
 
 
 		}
+
 		// game over
 		else if (game_state == 2){
 			bosque.stop();
